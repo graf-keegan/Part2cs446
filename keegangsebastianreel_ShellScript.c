@@ -1,4 +1,4 @@
-/*  Sebastian Reel and Keehan Graf
+/*  Sebastian Reel and Keegan Graf
     Programming Assignment 1 (Part 2)
     Purpose: Shell Code (add to this)
 */
