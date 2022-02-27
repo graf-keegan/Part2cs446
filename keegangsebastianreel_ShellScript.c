@@ -10,11 +10,12 @@
 #include <stdbool.h>
 
 int main(){
+    printf("poop\n");
     return 0;
 }
 int parseInput(char* input, char* splitWords[]){
       int wordInd = 0;
-      splitWords[0] = strtok (Links to an external site.)(input, " ");
+      splitWords[0] = strtok(input, " ");
       while(splitWords[wordInd] != NULL){
               splitWords[++wordInd] = strtok(NULL, " ");
       }
