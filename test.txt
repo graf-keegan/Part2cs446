@@ -1,1 +1,1 @@
-Test text.
+Testing that the file opens and writes and reads.

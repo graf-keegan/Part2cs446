@@ -67,18 +67,21 @@ int main(int argc, char *argv[]){
         printf("!Error opening file.");
         exit(1);
     }
-    fprintf(fp, "Test text.");
+    fprintf(fp, "Testing that the file opens and writes and reads.");
     fclose(fp);
 
     // Output Stream
     if ((fp = fopen("test.txt","r")) == NULL){
         printf("!Error opening file.");
-        exit(1);
+        return 1;
     }
     while (fgets(arr, 255, fp)){
         printf("\n%s\n", arr);
     }
     fclose(fp);
+    
+    bool b;
+    promptUser(b);
 
     printf("\n\nCorrectly Working.\n\n");
     return 0;
@@ -96,11 +99,28 @@ int parseInput(char* input, char* splitWords[]){
 }
 
 void promptUser(bool isBatch){
+    // Prompt User
+    //printf("USER : %s\n", getenv("USER"));
+    if (isBatch == false){
+        char hs[_SC_HOST_NAME_MAX + 1];
+        gethostname(hs, _SC_HOST_NAME_MAX + 1);
+        //printf("HOST : %s\n", hs);
 
+        char cwd[256];
+        getcwd(cwd, sizeof(cwd));
+        //printf("PATH : %s\n", cwd);
+
+        // Final Print
+        printf("%s@%s:%s$ ", getenv("USER"), hs, cwd);
+    } else {
+        isBatch == true;
+    }
 }
 
 void printError(){
-
+    // Implements the error message whenever the user enters nonsense or a command not implemented by us pr execvp
+    // Use for most edge cases
+    printf("\nShell Program Error Encountered");
 }
 
 char redirectCommand(char* special, char* line, bool* isRedirectm, char* tool[], char* outputTokens[], bool* isExits){
