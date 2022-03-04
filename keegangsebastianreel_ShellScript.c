@@ -32,12 +32,20 @@ char redirectCommand(char* special, char* line, bool* isRedirectm, char* tool[],
 void launchProcesses(char* tokens[], int numToekns, bool isRedirect);
 bool exitProgram(char* tokens[], int numTokens);
 void changeDirectories(char* tokens[], int numTokens);
-void printHelp(char* str, int index);
-char* executeCommand(char* cmd, bool* isRedirect, char* tokens[], char* outputTokens[], bool *isExists);
+void printHelp(char* str[], int index);
+char* executeCommand(char* cmd, bool* isRedirect, char* tokens[], char* outputTokens[], bool *isExits);
 
 // Main
 int main(int argc, char *argv[]){
     // fix shit here
+
+    //this is for executeCommand
+    char * tokens[10];
+    char * outputTokens[10];
+    bool * isExits;
+    bool * isRedirect;
+    //------------------------
+
     bool b = false;
     int i;
     printf("Program: %s", argv[0]);
@@ -80,18 +88,15 @@ int main(int argc, char *argv[]){
     
     // Redirection Stream
     //
+    //This is used for execute function(change later)
 
-    int num;
-    char s[10];
-    char * input = s;
-    char * sp[100];
+    char s[100];
     promptUser(b);
 
-    printf("\n\nCorrectly Working.\n\n");
-    scanf("%s", input);
-    printf("\n");
-    num = parseInput(input, sp);
-    printf("%i\n", num);
+    fgets(s, 100, stdin);
+
+    executeCommand(s, isRedirect, tokens, outputTokens, isExits);
+
     return 0;
 
 }
@@ -106,20 +111,6 @@ int parseInput(char* input, char* splitWords[]){
       }
       return wordInd;
 }
-
-/*void shellLoop(){
-    char *line;
-    char **args;
-    int status;
-    /*
-    while(status){
-        printf("> ");
-        //line
-        args = parseInput(args, )
-        //status
-    }
-
-}*/
 
 void promptUser(bool isBatch){
     // Prompt User
@@ -151,28 +142,49 @@ char redirectCommand(char* special, char* line, bool* isRedirectm, char* tool[],
 }
 
 void launchProcesses(char* tokens[], int numTokens, bool isRedirect){
-    /*
-    char *command = "ls";
-    tokens[] = {"ls", "-l", NULL};
 
-    if(fork() == numTokens){
-
-    }
-    */
 }
 
 bool exitProgram(char* tokens[], int numTokens){
-
+    if(!(strcmp(tokens[0], "exit")) && numTokens == 1){
+        return true;
+    }
+    printError();
+    return false;
 }
 
 void changeDirectories(char* tokens[], int numTokens){
 
-}
-
-void printHelp(char* str, int index){
 
 }
 
-char* executeCommand(char* cmd, bool* isRedirect, char* tokens[], char* outputTokens[], bool *isExists){
+void printHelp(char* str[], int index){
+    if(!(strcmp(str[0], "help")) && index == 1){
+        printf("These shell commands are defined internally.\n");
+        printf("help-prints this screen so you can see available shell commands.\n");
+        printf("cd -changes directories to specified path; if not given, defaults to home.\n");
+        printf("exit -closes the example shell.\n");
+        printf("[input] > [output] -pipes input file into output file\n\n");
+        printf("And more! If it's not explicitly defined here (or in the documentation for the assignment), then the command should try to be executed by launchProcesses. That's how we get ls -la to work here!\n");
+    }
+    printError();
+}
+
+char* executeCommand(char* cmd, bool* isRedirect, char* tokens[], char* outputTokens[], bool *isExits){
+        char *dupCmd = strdup(cmd);
+        char* newCmd = strcap(dupCmd, "\n");
+
+        char * Command = strchr(newCmd, ">");
+
+        if(Command != NULL){
+            redirectCommand();
+        }
+        
+
+
+
+        
+        char * s = "test";
+        return s;
 
 }
