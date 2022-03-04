@@ -38,6 +38,7 @@ char* executeCommand(char* cmd, bool* isRedirect, char* tokens[], char* outputTo
 // Main
 int main(int argc, char *argv[]){
     // fix shit here
+    bool b = false;
     int i;
     printf("Program: %s", argv[0]);
     // needs to be improved for interactive mode
@@ -49,7 +50,9 @@ int main(int argc, char *argv[]){
         printf("\nNum of Arguements: %d", argc);
         for(i = 0; i < argc; i++)
             printf("\nargv[%d]: %s", i, argv[i]);
+            b == true;
     }
+
 
     // FIle I/O
     FILE *fp;
@@ -78,13 +81,19 @@ int main(int argc, char *argv[]){
     // Redirection Stream
     //
 
-
-
-    bool b;
+    int num;
+    char s[10];
+    char * input = s;
+    char * sp[100];
     promptUser(b);
 
     printf("\n\nCorrectly Working.\n\n");
+    scanf("%s", input);
+    printf("\n");
+    num = parseInput(input, sp);
+    printf("%i\n", num);
     return 0;
+
 }
 
 // Function Definitions
@@ -98,7 +107,7 @@ int parseInput(char* input, char* splitWords[]){
       return wordInd;
 }
 
-void shellLoop(){
+/*void shellLoop(){
     char *line;
     char **args;
     int status;
@@ -109,8 +118,8 @@ void shellLoop(){
         args = parseInput(args, )
         //status
     }
-    */
-}
+
+}*/
 
 void promptUser(bool isBatch){
     // Prompt User
