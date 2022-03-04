@@ -23,15 +23,9 @@ reminder for building the terminal:
     Execute the command (with applicable parameters).
 */ 
 
-/*
-What are we implementing?
-A: ls, clear, cat (files), ls -la, exit, cd (by one and by all), help
-implement redirecting with cat from one file to another
-implement write copy
-*/
-
 // Function Prototypes
 int parseInput(char* input, char* splitWords[]);
+void shellLoop();
 void promptUser(bool isBatch);
 void printError();
 char redirectCommand(char* special, char* line, bool* isRedirectm, char* tool[], char* outputTokens[], bool* isExits);
@@ -48,7 +42,7 @@ int main(int argc, char *argv[]){
     printf("Program: %s", argv[0]);
     // needs to be improved for interactive mode
     if(argc==1)
-        printf("\n Not enough arguements.");
+        printf("\n No Batchfile detected.");
 
     // case for example if the user puts ./xxx batchfile
     if(argc>=2){
@@ -66,9 +60,10 @@ int main(int argc, char *argv[]){
     if(fp == NULL){
         printf("!Error opening file.");
         exit(1);
+    } else {
+        fprintf(fp, "Testing that the file opens and writes and reads.");
+        fclose(fp);
     }
-    fprintf(fp, "Testing that the file opens and writes and reads.");
-    fclose(fp);
 
     // Output Stream
     if ((fp = fopen("test.txt","r")) == NULL){
@@ -80,6 +75,11 @@ int main(int argc, char *argv[]){
     }
     fclose(fp);
     
+    // Redirection Stream
+    //
+
+
+
     bool b;
     promptUser(b);
 
@@ -96,6 +96,20 @@ int parseInput(char* input, char* splitWords[]){
               splitWords[++wordInd] = strtok(NULL, " ");
       }
       return wordInd;
+}
+
+void shellLoop(){
+    char *line;
+    char **args;
+    int status;
+    /*
+    while(status){
+        printf("> ");
+        //line
+        args = parseInput(args, )
+        //status
+    }
+    */
 }
 
 void promptUser(bool isBatch){
@@ -127,8 +141,15 @@ char redirectCommand(char* special, char* line, bool* isRedirectm, char* tool[],
 
 }
 
-void launchProcesses(char* tokens[], int numToekns, bool isRedirect){
+void launchProcesses(char* tokens[], int numTokens, bool isRedirect){
+    /*
+    char *command = "ls";
+    tokens[] = {"ls", "-l", NULL};
 
+    if(fork() == numTokens){
+
+    }
+    */
 }
 
 bool exitProgram(char* tokens[], int numTokens){
