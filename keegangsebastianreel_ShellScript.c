@@ -49,7 +49,7 @@ int main(int argc, char *argv[]){
 
     bool isBatch = false;
     int i;
-    printf("Program: %s", argv[0]);
+    //printf("Program: %s", argv[0]);
     
     // needs to be improved for interactive mode
     /*if(argc==1)
@@ -202,8 +202,8 @@ char* executeCommand(char* cmd, bool* isRedirect, char* tokens[], char* outputTo
         Command = strchr(dupCmd, '>');
 
         if(Command != NULL){
-            newRedirect = redirectCommand(cmd, cmd, isRedirect, tokens, outputTokens, isExits);
-            printf("test");
+            //newRedirect = redirectCommand(cmd, cmd, isRedirect, tokens, outputTokens, isExits);
+            //printf("test");
             if(Command == NULL){
                 numTok = parseInput(dupCmd, outputTokens);
                 if(!numTok){
