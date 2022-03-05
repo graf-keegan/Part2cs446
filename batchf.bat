@@ -1,2 +1,3 @@
 ls
+ls -la
 clear

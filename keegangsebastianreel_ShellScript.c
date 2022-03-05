@@ -13,6 +13,7 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <stdbool.h>
+
 /*
 reminder for building the terminal:
     Print a prompt and wait for input. 
@@ -37,7 +38,7 @@ char* executeCommand(char* cmd, bool* isRedirect, char* tokens[], char* outputTo
 
 // Main
 int main(int argc, char *argv[]){
-    // fix shit here
+    // fix things here
 
     //this is for executeCommand
     char * tokens[10];
@@ -46,23 +47,36 @@ int main(int argc, char *argv[]){
     bool * isRedirect = false;
     //------------------------
 
-    bool b = false;
+    bool isBatch = false;
     int i;
     printf("Program: %s", argv[0]);
+    
     // needs to be improved for interactive mode
     if(argc==1)
-        printf("\n No Batchfile detected.");
+        printf("\n No Batchfile detected. Starting interactive terminal.");
 
     // case for example if the user puts ./xxx batchfile
-    if(argc>=2){
+    if(argc==2){
         printf("\nNum of Arguements: %d", argc);
         for(i = 0; i < argc; i++)
             printf("\nargv[%d]: %s", i, argv[i]);
-            b == true;
+            isBatch == true;
     }
 
+    // Edge case for too many arguements being inputted
+    if(argc>2){
+        printf("!Error: Too many arguements!");
+        exit(1);
+    }
+
+    // Prompt User
+    // Prompt the user with a display of the system username, hostname, and current working directory
+    char s[100];
+    promptUser(isBatch);
+    fgets(s, 100, stdin);
 
     // FIle I/O
+    // File pointer and character array for input
     FILE *fp;
     char arr[255];
     
@@ -89,13 +103,7 @@ int main(int argc, char *argv[]){
     // Redirection Stream
     //
     //This is used for execute function(change later)
-
-    char s[100];
-    promptUser(b);
-
-    fgets(s, 100, stdin);
-
-    executeCommand(s, isRedirect, tokens, outputTokens, isExits);
+    printf("\n No Batchfile detected. Starting interactive terminal.");
 
     return 0;
 
@@ -137,7 +145,7 @@ void printError(){
     printf("\nShell Program Error Encountered");
 }
 
-char redirectCommand(char* special, char* line, bool* isRedirectm, char* tool[], char* outputTokens[], bool* isExits){
+char redirectCommand(char* special, char* line, bool* isRedirect, char* tool[], char* outputTokens[], bool* isExits){
 
 }
 
@@ -172,16 +180,16 @@ void printHelp(char* str[], int index){
 
 char* executeCommand(char* cmd, bool* isRedirect, char* tokens[], char* outputTokens[], bool *isExits){
         char *dupCmd = strdup(cmd);
-        char* newCmd = strcat(dupCmd, "\n");
+        char *newCmd = strcat(dupCmd, "\n");
         outputTokens[10];
         char * newRedirect;
         char * Command;
         int numTok;
 
-        Command = strchr(newCmd, ">");
+        Command = strchr(newCmd, "> ");
 
         if(Command != NULL){
-            newRedirect = redirectCommand(cmd, cmd, isRedirect, outputTokens, tokens);
+            newRedirect = redirectCommand(cmd, cmd, isRedirect, tokens[10], outputTokens[10], isExits);
 
             if(Command == NULL){
                 numTok = parseInput(newCmd, outputTokens);
@@ -194,7 +202,7 @@ char* executeCommand(char* cmd, bool* isRedirect, char* tokens[], char* outputTo
         else{
             *isRedirect = false;
             if(exitProgram(outputTokens, numTok)){
-                *isExits true;
+                *isExits = true;
                 return Command;
             }
 
@@ -206,5 +214,4 @@ char* executeCommand(char* cmd, bool* isRedirect, char* tokens[], char* outputTo
     launchProcesses(outputTokens, numTok, *isRedirect);    
 
     return Command;
-
 }
