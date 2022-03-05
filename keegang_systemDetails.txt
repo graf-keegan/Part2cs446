@@ -1,0 +1,6 @@
+vendor_id : AuthenticAMD, model : 33
+5.13.0-30-generic
+19350.89
+2022-03-04 18:31:59.895999992
+Could not find out how to do disk
+processes 7081
