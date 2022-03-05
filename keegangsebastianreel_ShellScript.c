@@ -71,12 +71,13 @@ int main(int argc, char *argv[]){
 */
     // Prompt User
     // Prompt the user with a display of the system username, hostname, and current working directory
-    char s[100] = "";
-    promptUser(isBatch);
-    fgets(s, 100, stdin);
-
-
-    executeCommand(s, &isRedirect, tokens, outputTokens, &isExits);
+    
+    while(isExits == false){
+        char s[100] = "";
+        promptUser(isBatch);
+        fgets(s, 100, stdin);
+        executeCommand(s, &isRedirect, tokens, outputTokens, &isExits);
+    }
 /*
 
     // FIle I/O
@@ -146,15 +147,14 @@ void promptUser(bool isBatch){
 void printError(){
     // Implements the error message whenever the user enters nonsense or a command not implemented by us pr execvp
     // Use for most edge cases
-    printf("\nShell Program Error Encountered");
+    printf("Shell Program Error Encountered.\n");
 }
 
 char *redirectCommand(char* special, char* line, bool* isRedirect, char* tool[], char* outputTokens[], bool* isExits){
     printf("%s\n", special);
     char *dupS = strdup(special);
-return NULL;
-    
 
+    return NULL;
 }
 
 void launchProcesses(char* tokens[], int numTokens, bool isRedirect){
@@ -172,8 +172,16 @@ bool exitProgram(char* tokens[], int numTokens){
 }
 
 void changeDirectories(char* tokens[], int numTokens){
-
-
+    if((!strcmp("cd", tokens[0])) && numTokens == 2){
+        tokens[1][strlen(tokens[1])-1] = '\0';
+        tokens[1][strlen(tokens[1])-1] = '\0';
+        if(chdir(tokens[1]) == -1){
+            printError();
+        }
+    }
+    if((!strcmp("cd\n\n", tokens[0])) && numTokens == 1){
+        printError();
+    }
 }
 
 void printHelp(char* str[], int index){
@@ -184,9 +192,8 @@ void printHelp(char* str[], int index){
         printf("exit -closes the example shell.\n");
         printf("[input] > [output] -pipes input file into output file\n\n");
         printf("And more! If it's not explicitly defined here (or in the documentation for the assignment), then the command should try to be executed by launchProcesses. That's how we get ls -la to work here!\n");
-    }
-    if(!strcmp("help\n\n", str[0])){
-    printError();
+    } else if(!strcmp("help\n\n", str[0])){
+        printError();
     }
 }
 
@@ -221,7 +228,7 @@ char* executeCommand(char* cmd, bool* isRedirect, char* tokens[], char* outputTo
         }
 
 
-    //changeDirectories(outputTokens, numTok);
+    changeDirectories(outputTokens, numTok);
     printHelp(outputTokens, numTok);
     //launchProcesses(outputTokens, numTok, *isRedirect);    
 
