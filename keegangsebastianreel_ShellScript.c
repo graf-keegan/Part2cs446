@@ -4,25 +4,15 @@
 */
 
 #include <stdio.h>
-#include <string.h> // iumportant when you are going to use strtok to break strings into a series of tokens using delim and str
+#include <string.h>
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <sys/types.h>
-#include <unistd.h> // this has something to do with the execvp
+#include <unistd.h> 
 #include <fcntl.h>
 #include <errno.h>
 #include <sys/stat.h>
 #include <stdbool.h>
-
-/*
-reminder for building the terminal:
-    Print a prompt and wait for input. 
-    Get the command line input.
-    Parse the command line input.
-    Find associated files.
-    Pass any parameters from the shell to the OS command function.
-    Execute the command (with applicable parameters).
-*/ 
 
 // Function Prototypes
 int parseInput(char* input, char* splitWords[]);
@@ -38,7 +28,10 @@ char* executeCommand(char* cmd, bool* isRedirect, char* tokens[], char* outputTo
 
 // Main
 int main(int argc, char *argv[]){
-    // fix things here
+    // initializing the file streams for input, output, and redirection
+    FILE *input_fp = NULL;
+    FILE *output_fp = NULL;
+    FILE *redirect_fp = NULL;
 
     //this is for executeCommand
     char * tokens[10];
@@ -46,72 +39,37 @@ int main(int argc, char *argv[]){
     bool isExits;
     bool isRedirect = false;
     //------------------------
-
+    // batch
     bool isBatch = false;
-    int i;
-    //printf("Program: %s", argv[0]);
-    
-    // needs to be improved for interactive mode
-    /*if(argc==1)
-        printf("\nNo Batchfile detected.\nStarting interactive terminal.\n");
 
-    // case for example if the user puts ./xxx batchfile
-    if(argc==2){
-        printf("\nNum of Arguements: %d", argc);
-        for(i = 0; i < argc; i++)
-            printf("\nargv[%d]: %s", i, argv[i]);
-            isBatch == true;
+    // checking if batch or not
+    if(argc == 2){
+        isBatch = 1;
+    } else {
+        isBatch = 0;
     }
 
-    // Edge case for too many arguements being inputted
-    if(argc>2){
-        printf("!Error: Too many arguements!");
-        exit(1);
-    }
-*/
-    // Prompt User
-    // Prompt the user with a display of the system username, hostname, and current working directory
-    
+    // main loop for interactive terminal
     while(isExits == false){
-        char s[100] = "";
-        promptUser(isBatch);
-        fgets(s, 100, stdin);
-        executeCommand(s, &isRedirect, tokens, outputTokens, &isExits);
+        // this is the batch case of is a bile is added to the command line arguements
+        if(isBatch){
+            char line[200];
+            stdin = fopen(argv[argc - 1], "r");
+            while(fgets(line, 200, stdin)){
+                printf("%s\n", line);
+                executeCommand(line, &isRedirect, tokens, outputTokens, &isExits);
+            }
+            isExits = true;
+        // the main interactive terminal without any more arguements
+        } else {
+            char s[100] = "";
+            promptUser(isBatch);
+            fgets(s, 100, stdin);
+            executeCommand(s, &isRedirect, tokens, outputTokens, &isExits);
+        }     
     }
-/*
-
-    // FIle I/O
-    // File pointer and character array for input
-    FILE *fp;
-    char arr[255];
     
-    // Input stream
-    fp = fopen("test.txt","w");
-    if(fp == NULL){
-        printf("!Error opening file.");
-        exit(1);
-    } 
-    else if(isBatch == true){
-        fprintf(fp, "Testing that the file opens and writes and reads.");
-        fclose(fp);
-    }
-
-    // Output Stream
-    if ((fp = fopen("test.txt","r")) == NULL){
-        printf("!Error opening file.");
-        return 1;
-    }
-    while (fgets(arr, 255, fp)){
-        printf("\n%s\n", arr);
-    }
-    fclose(fp);
-    
-    // Redirection Stream
-    //
-    //This is used for execute function(change later)
-    */
     return 0;
-
 }
 
 // Function Definitions
@@ -127,7 +85,7 @@ int parseInput(char* input, char* splitWords[]){
 
 void promptUser(bool isBatch){
     // Prompt User
-    //printf("USER : %s\n", getenv("USER"));
+    // Prints the entire user, home device, and current working directory to the terminal / interactive terminal
     if (isBatch == false){
         char hs[_SC_HOST_NAME_MAX + 1];
         gethostname(hs, _SC_HOST_NAME_MAX + 1);
@@ -135,7 +93,6 @@ void promptUser(bool isBatch){
 
         char cwd[256];
         getcwd(cwd, sizeof(cwd));
-        //printf("PATH : %s\n", cwd);
 
         // Final Print
         printf("%s@%s:%s$ ", getenv("USER"), hs, cwd);
@@ -158,15 +115,12 @@ char *redirectCommand(char* special, char* line, bool* isRedirect, char* tool[],
 }
 
 void launchProcesses(char* tokens[], int numTokens, bool isRedirect){
-    // Use execvp for ls, ls ls 'la, clear
-
+    // These will be used to parse the newline off of the commands (any commands that arent completed)
     tokens[numTokens - 1][strlen(tokens[numTokens - 1])-1] = '\0';
     tokens[numTokens - 1][strlen(tokens[numTokens - 1])-1] = '\0';
-    //if(!(strcmp("ls", tokens[numTokens - 1])) && numTokens == 2){
-        //tokens[1][strlen(tokens[1])-1] = '\0';
-        //tokens[1][strlen(tokens[1])-1] = '\0';
-    //}
-
+    
+    // creates a child process using the execvp function, taking in commands
+    // includes commands not listed in the help command. (like cat, echo, etc.)
     if(!fork()){
         execvp(tokens[0], tokens);
         exit(0);
@@ -177,6 +131,8 @@ void launchProcesses(char* tokens[], int numTokens, bool isRedirect){
 }
 
 bool exitProgram(char* tokens[], int numTokens){
+    // removed the newlines on the exit keyword
+    // this will exsit the program if the keyword is specifically called.
     if(!(strcmp(tokens[0], "exit\n\n")) && numTokens == 1){
         return true;
     }
@@ -187,6 +143,7 @@ bool exitProgram(char* tokens[], int numTokens){
 }
 
 void changeDirectories(char* tokens[], int numTokens){
+    // checks for the 2nd token in the string array, and then removes the newlines off of it so it may be run correctly.
     if((!strcmp("cd", tokens[0])) && numTokens == 2){
         tokens[1][strlen(tokens[1])-1] = '\0';
         tokens[1][strlen(tokens[1])-1] = '\0';
@@ -194,12 +151,15 @@ void changeDirectories(char* tokens[], int numTokens){
             printError();
         }
     }
+    // if there is jsut "cd" and no specified path, then it will preint an error.
     if((!strcmp("cd\n\n", tokens[0])) && numTokens == 1){
         printError();
     }
 }
 
 void printHelp(char* str[], int index){
+    // Help Sections
+    // if help command it called, then this menu is printed to give users instruction on what they can do in the interactive terminal.
     if((!strcmp("help\n\n", str[0])) && index == 1){
         printf("These shell commands are defined internally.\n");
         printf("help-prints this screen so you can see available shell commands.\n");
@@ -225,7 +185,6 @@ char* executeCommand(char* cmd, bool* isRedirect, char* tokens[], char* outputTo
 
         if(Command != NULL){
             //newRedirect = redirectCommand(cmd, cmd, isRedirect, tokens, outputTokens, isExits);
-            //printf("test");
             if(Command == NULL){
                 numTok = parseInput(dupCmd, outputTokens);
                 if(!numTok){
