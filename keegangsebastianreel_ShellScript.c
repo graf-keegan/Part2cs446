@@ -103,8 +103,6 @@ int main(int argc, char *argv[]){
     // Redirection Stream
     //
     //This is used for execute function(change later)
-    printf("\n No Batchfile detected. Starting interactive terminal.");
-
     return 0;
 
 }
