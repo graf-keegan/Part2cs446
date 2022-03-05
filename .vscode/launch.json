@@ -9,9 +9,9 @@
         ""
       ],
       "stopAtEntry": false,
-      "cwd": "/home/keegan/Desktop/Part2cs446",
+      "cwd": "/home/reallyseb/Desktop/cs446/sebastianreel_CS446_PA1/Part2cs446",
       "environment": [],
-      "program": "/home/keegan/Desktop/Part2cs446/build/Debug/outDebug",
+      "program": "/home/reallyseb/Desktop/cs446/sebastianreel_CS446_PA1/Part2cs446/build/Debug/outDebug",
       "internalConsoleOptions": "openOnSessionStart",
       "MIMode": "gdb",
       "miDebuggerPath": "/usr/bin/gdb",

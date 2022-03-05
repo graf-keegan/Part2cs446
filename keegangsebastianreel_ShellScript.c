@@ -109,8 +109,23 @@ void printError(){
 
 char *redirectCommand(char* special, char* line, bool* isRedirect, char* tool[], char* outputTokens[], bool* isExits){
     printf("%s\n", special);
+    char *wordsThatGetSplit[100];
     char *dupS = strdup(special);
+    int numTok = parseInput(dupS, outputTokens);
+    int i=0;
 
+    while (outputTokens[i]!=NULL) {
+        // try catch me
+        if (strchr(outputTokens[i], '>')) {
+            *isRedirect = true;
+            free(dupS); 
+            return outputTokens[i+1];
+        }
+        i++;
+    }
+
+    *isRedirect = false;
+    free(dupS); //OMG IT FIXED IT!
     return NULL;
 }
 
@@ -119,14 +134,35 @@ void launchProcesses(char* tokens[], int numTokens, bool isRedirect){
     tokens[numTokens - 1][strlen(tokens[numTokens - 1])-1] = '\0';
     tokens[numTokens - 1][strlen(tokens[numTokens - 1])-1] = '\0';
     
-    // creates a child process using the execvp function, taking in commands
-    // includes commands not listed in the help command. (like cat, echo, etc.)
-    if(!fork()){
-        execvp(tokens[0], tokens);
-        exit(0);
+    if(isRedirect == 0){
+        // creates a child process using the execvp function, taking in commands
+        // includes commands not listed in the help command. (like cat, echo, etc.)
+        if(!fork()){
+            execvp(tokens[0], tokens);
+            exit(0);
+        } else {
+            wait(NULL);
+            return;
+        }
     } else {
-        wait(NULL);
-        return;
+        int i = 0;
+        while(i < numTokens){
+            printf("%s <--\n", tokens[i]);
+            if(strchr(tokens[i], '>')) {
+                // try catch me
+            freopen(tokens[i+1], "w",stdout);
+            tokens[i] = NULL;
+
+                if(!fork()){
+                    execvp(tokens[0], tokens);
+                    exit(0);
+                } else {
+                    wait(NULL);
+                    return;
+                }
+            }
+            i++;
+        }
     }
 }
 
@@ -179,14 +215,15 @@ char* executeCommand(char* cmd, bool* isRedirect, char* tokens[], char* outputTo
         char * newRedirect = "";
         char * Command = "";
         int numTok = parseInput(dupCmd, outputTokens);
+        char *trashTokens[30];
 
 
-        Command = strchr(dupCmd, '>');
+        Command = strchr(cmd, '>');
 
         if(Command != NULL){
-            //newRedirect = redirectCommand(cmd, cmd, isRedirect, tokens, outputTokens, isExits);
+            // = redirectCommand(cmd, cmd, isRedirect, trashTokens, trashTokens, isExits);
             if(Command == NULL){
-                numTok = parseInput(dupCmd, outputTokens);
+                numTok = parseInput(dupCmd, trashTokens);
                 if(!numTok){
                     return NULL;
                 }
