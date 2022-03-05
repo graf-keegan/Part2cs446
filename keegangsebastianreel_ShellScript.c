@@ -1,6 +1,6 @@
 /*  Sebastian Reel and Keegan Graf
     Programming Assignment 1 (Part 2)
-    Purpose: Shell Code (add to this)
+    Purpose: Shell Code with interactive terminal and batch mode. Also implements different commands and file redirection.
 */
 
 #include <stdio.h>
