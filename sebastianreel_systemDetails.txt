@@ -1,0 +1,7 @@
+1. vendor_id : AuthenticAMD
+   model : 113
+2. Linux version 5.13.0-30-generic
+3. 7 0 3 2 . 0 9
+4. Time Last Booted - 2022-02-26 23:11:25.056000017
+5. Total Disk Requests - 8708771
+6. processes 10283
