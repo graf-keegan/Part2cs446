@@ -43,7 +43,7 @@ int main(int argc, char *argv[]){
     char * tokens[10];
     char * outputTokens[10];
     bool * isExits;
-    bool * isRedirect;
+    bool * isRedirect = false;
     //------------------------
 
     bool b = false;
@@ -172,19 +172,39 @@ void printHelp(char* str[], int index){
 
 char* executeCommand(char* cmd, bool* isRedirect, char* tokens[], char* outputTokens[], bool *isExits){
         char *dupCmd = strdup(cmd);
-        char* newCmd = strcap(dupCmd, "\n");
+        char* newCmd = strcat(dupCmd, "\n");
+        outputTokens[10];
+        char * newRedirect;
+        char * Command;
+        int numTok;
 
-        char * Command = strchr(newCmd, ">");
+        Command = strchr(newCmd, ">");
 
         if(Command != NULL){
-            redirectCommand();
+            newRedirect = redirectCommand(cmd, cmd, isRedirect, outputTokens, tokens);
+
+            if(Command == NULL){
+                numTok = parseInput(newCmd, outputTokens);
+
+                if(!numTok){
+                    return NULL;
+                }
+            }
         }
-        
+        else{
+            *isRedirect = false;
+            if(exitProgram(outputTokens, numTok)){
+                *isExits true;
+                return Command;
+            }
+
+        }
 
 
+    changeDirectories(outputTokens, numTok);
+    printHelp(outputTokens, numTok);
+    launchProcesses(outputTokens, numTok, *isRedirect);    
 
-        
-        char * s = "test";
-        return s;
+    return Command;
 
 }
