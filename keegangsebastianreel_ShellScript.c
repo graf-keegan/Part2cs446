@@ -158,7 +158,22 @@ char *redirectCommand(char* special, char* line, bool* isRedirect, char* tool[],
 }
 
 void launchProcesses(char* tokens[], int numTokens, bool isRedirect){
+    // Use execvp for ls, ls ls 'la, clear
 
+    tokens[numTokens - 1][strlen(tokens[numTokens - 1])-1] = '\0';
+    tokens[numTokens - 1][strlen(tokens[numTokens - 1])-1] = '\0';
+    //if(!(strcmp("ls", tokens[numTokens - 1])) && numTokens == 2){
+        //tokens[1][strlen(tokens[1])-1] = '\0';
+        //tokens[1][strlen(tokens[1])-1] = '\0';
+    //}
+
+    if(!fork()){
+        execvp(tokens[0], tokens);
+        exit(0);
+    } else {
+        wait(NULL);
+        return;
+    }
 }
 
 bool exitProgram(char* tokens[], int numTokens){
@@ -230,7 +245,7 @@ char* executeCommand(char* cmd, bool* isRedirect, char* tokens[], char* outputTo
 
     changeDirectories(outputTokens, numTok);
     printHelp(outputTokens, numTok);
-    //launchProcesses(outputTokens, numTok, *isRedirect);    
+    launchProcesses(outputTokens, numTok, *isRedirect);    
 
     return Command;
 }
