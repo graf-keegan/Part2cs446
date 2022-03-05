@@ -29,7 +29,7 @@ int parseInput(char* input, char* splitWords[]);
 void shellLoop();
 void promptUser(bool isBatch);
 void printError();
-char redirectCommand(char* special, char* line, bool* isRedirectm, char* tool[], char* outputTokens[], bool* isExits);
+char *redirectCommand(char* special, char* line, bool* isRedirectm, char* tool[], char* outputTokens[], bool* isExits);
 void launchProcesses(char* tokens[], int numToekns, bool isRedirect);
 bool exitProgram(char* tokens[], int numTokens);
 void changeDirectories(char* tokens[], int numTokens);
@@ -43,8 +43,8 @@ int main(int argc, char *argv[]){
     //this is for executeCommand
     char * tokens[10];
     char * outputTokens[10];
-    bool * isExits;
-    bool * isRedirect = false;
+    bool isExits;
+    bool isRedirect = false;
     //------------------------
 
     bool isBatch = false;
@@ -52,8 +52,8 @@ int main(int argc, char *argv[]){
     printf("Program: %s", argv[0]);
     
     // needs to be improved for interactive mode
-    if(argc==1)
-        printf("\n No Batchfile detected. Starting interactive terminal.");
+    /*if(argc==1)
+        printf("\nNo Batchfile detected.\nStarting interactive terminal.\n");
 
     // case for example if the user puts ./xxx batchfile
     if(argc==2){
@@ -68,12 +68,16 @@ int main(int argc, char *argv[]){
         printf("!Error: Too many arguements!");
         exit(1);
     }
-
+*/
     // Prompt User
     // Prompt the user with a display of the system username, hostname, and current working directory
-    char s[100];
+    char s[100] = "";
     promptUser(isBatch);
     fgets(s, 100, stdin);
+
+
+    executeCommand(s, &isRedirect, tokens, outputTokens, &isExits);
+/*
 
     // FIle I/O
     // File pointer and character array for input
@@ -85,7 +89,8 @@ int main(int argc, char *argv[]){
     if(fp == NULL){
         printf("!Error opening file.");
         exit(1);
-    } else {
+    } 
+    else if(isBatch == true){
         fprintf(fp, "Testing that the file opens and writes and reads.");
         fclose(fp);
     }
@@ -103,6 +108,7 @@ int main(int argc, char *argv[]){
     // Redirection Stream
     //
     //This is used for execute function(change later)
+    */
     return 0;
 
 }
@@ -143,7 +149,11 @@ void printError(){
     printf("\nShell Program Error Encountered");
 }
 
-char redirectCommand(char* special, char* line, bool* isRedirect, char* tool[], char* outputTokens[], bool* isExits){
+char *redirectCommand(char* special, char* line, bool* isRedirect, char* tool[], char* outputTokens[], bool* isExits){
+    printf("%s\n", special);
+    char *dupS = strdup(special);
+return NULL;
+    
 
 }
 
@@ -152,10 +162,12 @@ void launchProcesses(char* tokens[], int numTokens, bool isRedirect){
 }
 
 bool exitProgram(char* tokens[], int numTokens){
-    if(!(strcmp(tokens[0], "exit")) && numTokens == 1){
+    if(!(strcmp(tokens[0], "exit\n\n")) && numTokens == 1){
         return true;
     }
+    if(!strcmp(tokens[0], "exit\n\n")){
     printError();
+    }
     return false;
 }
 
@@ -165,7 +177,7 @@ void changeDirectories(char* tokens[], int numTokens){
 }
 
 void printHelp(char* str[], int index){
-    if(!(strcmp(str[0], "help")) && index == 1){
+    if((!strcmp("help\n\n", str[0])) && index == 1){
         printf("These shell commands are defined internally.\n");
         printf("help-prints this screen so you can see available shell commands.\n");
         printf("cd -changes directories to specified path; if not given, defaults to home.\n");
@@ -173,25 +185,27 @@ void printHelp(char* str[], int index){
         printf("[input] > [output] -pipes input file into output file\n\n");
         printf("And more! If it's not explicitly defined here (or in the documentation for the assignment), then the command should try to be executed by launchProcesses. That's how we get ls -la to work here!\n");
     }
+    if(!strcmp("help\n\n", str[0])){
     printError();
+    }
 }
 
 char* executeCommand(char* cmd, bool* isRedirect, char* tokens[], char* outputTokens[], bool *isExits){
         char *dupCmd = strdup(cmd);
-        char *newCmd = strcat(dupCmd, "\n");
+        strcat(dupCmd, "\n");
         outputTokens[10];
-        char * newRedirect;
-        char * Command;
-        int numTok;
+        char * newRedirect = "";
+        char * Command = "";
+        int numTok = parseInput(dupCmd, outputTokens);
 
-        Command = strchr(newCmd, "> ");
+
+        Command = strchr(dupCmd, '>');
 
         if(Command != NULL){
-            newRedirect = redirectCommand(cmd, cmd, isRedirect, tokens[10], outputTokens[10], isExits);
-
+            newRedirect = redirectCommand(cmd, cmd, isRedirect, tokens, outputTokens, isExits);
+            printf("test");
             if(Command == NULL){
-                numTok = parseInput(newCmd, outputTokens);
-
+                numTok = parseInput(dupCmd, outputTokens);
                 if(!numTok){
                     return NULL;
                 }
@@ -207,9 +221,9 @@ char* executeCommand(char* cmd, bool* isRedirect, char* tokens[], char* outputTo
         }
 
 
-    changeDirectories(outputTokens, numTok);
+    //changeDirectories(outputTokens, numTok);
     printHelp(outputTokens, numTok);
-    launchProcesses(outputTokens, numTok, *isRedirect);    
+    //launchProcesses(outputTokens, numTok, *isRedirect);    
 
     return Command;
 }
